@@ -79,5 +79,3 @@ class Payment(models.Model):
     completed_at = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-

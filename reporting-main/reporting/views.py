@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from .models import Business, LineItem
 from .tables import CustomerTable
-
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -10,14 +9,12 @@ from django.db import models
 from reporting.models import *
 from django.db.models import Sum, F, Q
 from django_tables2 import RequestConfig
+import pdb
 
 
-# # Create your views here.
+# Create your views here.
 def index(request):
   return HttpResponse("Hello, world.")
-
-
-
 
 
 def customer_list(request):
@@ -35,7 +32,7 @@ def customer_list(request):
 
 
 def customer_detail(request,customer_id):
-    customer = Customer.objects.get(pk = customer_id)
+    customer = Customer.objects.get(pk = customer_id) 
     invoices = Invoice.objects.filter(
         line_items__job__customer = customer
     )
