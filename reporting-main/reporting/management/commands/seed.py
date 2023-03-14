@@ -79,7 +79,7 @@ class Command(BaseCommand):
         for invoice_line_item in items_to_be_paid:
             line_item = LineItem(
                 payment=payment,
-                self_item=invoice_line_item,
+                invoice=invoice_line_item,
                 description=invoice_line_item.description,
                 amount=invoice_line_item.amount,
             )
