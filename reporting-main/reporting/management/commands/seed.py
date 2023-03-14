@@ -30,44 +30,44 @@ class Command(BaseCommand):
         business = choice(self.businesses)
         job = Job(customer=customer, business=business, name=self.fake.bs()) # Business Soundings phrases
         job.save()
-        invoice = self.seed_invoice(customer, business, job)
-        items_to_be_paid = sample(invoice.line_items.all(), int(len(invoice.line_items.all()) / 2))
+        invoice = self.seed_invoice(business, job)
+        items_to_be_paid = sample(list(invoice.line_items.all()), int(len(invoice.line_items.all()) / 2))
         self.pay_line_items(customer, business, items_to_be_paid)
 
 
-    def seed_invoice(self, customer, business, job):
+    def seed_invoice(self, business, job):
         invoice = Invoice(
             business=business,
             number=self.fake.numerify(text='!!###'),
             due_date=pytz.utc.localize(
-                self.fake.date_time_this_year(after_now=True)),
+                self.fake.date_time_this_year()),
             status=choice([Invoice.DRAFT, Invoice.PAID, Invoice.UNPAID]),
         )
         invoice.save()
         job_line_item = LineItem(
-            job=job,
-            description=self.fake.bs(),
-            amount=uniform(0, 1000)
+        job=job,
+        description=self.fake.bs(),
+        amount=uniform(0, 1000)
         )
         job_line_item.save()
         invoice_line_item = LineItem(
-            invoice=invoice,
-            self_item=job_line_item,
-            description=job_line_item.description,
-            amount=job_line_item.amount
+        invoice=invoice,
+        job=job,
+        description=job_line_item.description,
+        amount=job_line_item.amount
         )
         invoice_line_item.save()
         return invoice
-
+    
 
     def pay_line_items(self, customer, business, items_to_be_paid):
         payment_type = choice(
             [Payment.CHECK, Payment.DEBIT_CARD, Payment.CREDIT_CARD])
         amount = sum([x.amount for x in items_to_be_paid])
         initiated_date = pytz.utc.localize(
-            self.fake.date_time_this_year(after_today=True))
+            self.fake.date_time_this_year())
         completed_date = initiated_date + datetime.timedelta(days=7)
-        payment = Payment(payer=customer,
+        payment = Payment(payer=business,  # payer should be a Business instance
                           payee=business,
                           amount=amount,
                           reference=self.fake.numerify(text='!!###'),
